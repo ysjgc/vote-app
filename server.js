@@ -208,6 +208,56 @@ app.get('/api/admin/reset', (req, res) => {
   res.json({ success: true, message: '投票数据已清空' });
 });
 
+// 导出投票数据（排行 + 明细，带密钥保护）
+// 调用方式：GET /api/export?key=ADMIN_KEY&type=all|ranking|detail
+app.get('/api/export', (req, res) => {
+  const key = req.query.key;
+  const type = req.query.type || 'all';
+  const adminKey = process.env.ADMIN_RESET_KEY || 'Zt2026VoteAdminSecret';
+  if (key !== adminKey) {
+    return res.status(403).json({ success: false, message: '无权操作' });
+  }
+
+  const data = loadData();
+
+  // 排行数据
+  const stats = WORKS.map((w) => {
+    let votes = 0;
+    for (const v of data.votes) {
+      if (v.picks.includes(w.id)) votes++;
+    }
+    return { rank: 0, id: w.id, author: w.author, title: w.title, votes };
+  });
+  stats.sort((a, b) => b.votes - a.votes);
+  stats.forEach((s, i) => { s.rank = i + 1; });
+
+  // 明细数据（把作品ID翻译成作品名）
+  const idToTitle = {};
+  WORKS.forEach((w) => { idToTitle[w.id] = w.title; });
+  const details = data.votes.map((v, i) => ({
+    seq: i + 1,
+    phone: v.phone,
+    name: v.name,
+    picks: v.picks,
+    picksTitle: v.picks.map((p) => idToTitle[p] || p),
+    time: v.time
+  }));
+
+  if (type === 'ranking') {
+    return res.json({ success: true, totalVotes: data.votes.length, totalPickCount: details.reduce((a, v) => a + v.picks.length, 0), ranking: stats });
+  }
+  if (type === 'detail') {
+    return res.json({ success: true, totalVotes: data.votes.length, details });
+  }
+  res.json({
+    success: true,
+    totalVotes: data.votes.length,
+    totalPickCount: details.reduce((a, v) => a + v.picks.length, 0),
+    ranking: stats,
+    details
+  });
+});
+
 // 获取投票结果排行
 app.get('/api/result', (req, res) => {
   const data = loadData();
