@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公众号作品投票</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">公众号优秀作品评选</span>
+      <h1>优秀作品投票</h1>
+      <p class="sub">为你喜欢的公众号科普作品投上宝贵一票，支持健康科普创作！</p>
+      <div class="meta">
+        <span class="badge">每人每次可选 <strong>最多 3 个</strong> 作品</span>
+        <span class="badge">每账号可投票 <strong>3 次</strong></span>
+        <span class="badge deadline">截止：2026年8月27日 18:00</span>
+      </div>
+    </header>
+
+    <!-- 账号登录 -->
+    <section class="card account-box">
+      <h2>开始投票</h2>
+      <p class="section-desc">请输入您的手机号和昵称作为投票身份，同一手机号最多可投票 3 次。</p>
+      <div class="form-row">
+        <div class="field">
+          <label for="phone">手机号</label>
+          <input type="tel" id="phone" placeholder="请输入 11 位手机号" maxlength="11" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="name">昵称</label>
+          <input type="text" id="name" placeholder="请输入您的昵称" maxlength="20">
+        </div>
+      </div>
+      <div class="account-status" id="accountStatus"></div>
+    </section>
+
+    <!-- 作品列表 -->
+    <section class="card">
+      <h2 class="section-title">选择作品</h2>
+      <p class="section-desc" id="worksDesc">加载中...</p>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="检索：作品 ID / 姓名 / 作品名称" autocomplete="off">
+      </div>
+      <p class="search-hint" id="searchHint"></p>
+
+      <div class="works-grid" id="worksGrid">
+        <div class="empty-state">正在加载作品列表...</div>
+      </div>
+    </section>
+
+    <!-- 投票栏 -->
+    <div class="vote-bar">
+      <div class="count">已选 <strong id="pickedCount">0</strong> / 3 个作品</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline" id="resetBtn">清空选择</button>
+        <button class="btn btn-primary" id="submitBtn" disabled>提交投票</button>
+      </div>
+    </div>
+
+    <footer>
+      <a href="result.html" style="color:var(--primary);text-decoration:none;font-weight:600;">查看投票结果排行 →</a>
+    </footer>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

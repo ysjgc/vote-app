@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投票结果排行</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">实时统计</span>
+      <h1>投票结果排行</h1>
+      <p class="sub">按得票数实时排序，为你心仪的作品加油！</p>
+    </header>
+
+    <section class="card">
+      <div class="result-top">
+        <div class="result-stats" id="resultStats">
+          <span class="stat-chip">总投票人次：<span id="totalVotes">-</span></span>
+          <span class="stat-chip">总投票票数：<span id="totalPicks">-</span></span>
+        </div>
+        <button class="btn btn-outline" id="refreshBtn">刷新</button>
+      </div>
+      <div class="result-list" id="resultList">
+        <div class="empty-state">加载中...</div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="/" style="color:var(--primary);text-decoration:none;font-weight:600;">← 返回投票</a>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+    const listEl = document.getElementById('resultList');
+    const totalVotesEl = document.getElementById('totalVotes');
+    const totalPicksEl = document.getElementById('totalPicks');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function render() {
+      fetch('/api/result')
+        .then((r) => r.json())
+        .then((data) => {
+          if (!data.success) return;
+          totalVotesEl.textContent = data.totalVotes;
+          totalPicksEl.textContent = data.totalPickCount;
+
+          if (!data.results || data.results.length === 0) {
+            listEl.innerHTML = '<div class="empty-state">暂无投票数据</div>';
+            return;
+          }
+
+          listEl.innerHTML = data.results.map((item, idx) => {
+            const rank = idx + 1;
+            const top3 = rank <= 3 ? ' top3' : '';
+            const medal = rank === 1 ? ' 🥇' : (rank === 2 ? ' 🥈' : (rank === 3 ? ' 🥉' : ''));
+            return '' +
+              '<div class="result-row">' +
+                '<div class="rank' + top3 + '">' + rank + '</div>' +
+                '<div class="r-info">' +
+                  '<div class="r-title">' + rank + '. ' + escapeHtml(item.title) + '</div>' +
+                  '<div class="r-meta">作者：' + escapeHtml(item.author) + ' · ID ' + item.id + '</div>' +
+                '</div>' +
+                '<div class="r-votes">' + item.votes + '<small> 票</small></div>' +
+              '</div>';
+          }).join('');
+        })
+        .catch(() => {
+          listEl.innerHTML = '<div class="empty-state">加载失败，请刷新</div>';
+        });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    refreshBtn.addEventListener('click', render);
+    render();
+  })();
+  </script>
+</body>
+</html>
