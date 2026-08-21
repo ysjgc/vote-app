@@ -1,0 +1,12 @@
+{
+  "name": "vote-app",
+  "version": "1.0.0",
+  "description": "公众号作品投票系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

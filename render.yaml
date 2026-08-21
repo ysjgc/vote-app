@@ -1,0 +1,18 @@
+# 公众号作品投票系统 - Render Blueprint 部署配置
+# 使用方法：在 Render 控制台使用 "Blueprint" 方式导入本仓库即可自动部署
+services:
+  - type: web
+    name: zhuangtou-vote
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: vote-data
+      mountPath: /data
+      sizeGB: 1
+    healthCheckPath: /api/works
