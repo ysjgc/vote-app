@@ -110,6 +110,12 @@ function isValidPhone(phone) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 微信域名归属验证文件（部署在根目录，用于微信中打开链接的域名验证）
+app.get('/13ba2b05a49d9422977e8a47fd7ae30f.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('bf0535670439179bf257fc1060cab0437038148d');
+});
+
 // ---------------- API ----------------
 
 // 获取作品列表
