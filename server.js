@@ -194,6 +194,20 @@ app.get('/api/account', (req, res) => {
   });
 });
 
+// 清空全部投票数据（带密钥保护，仅用于运维清理）
+// 调用方式：GET /api/admin/reset?key=RESET_KEY
+app.get('/api/admin/reset', (req, res) => {
+  const key = req.query.key;
+  const adminKey = process.env.ADMIN_RESET_KEY || 'ZhuangTou2026Reset';
+  if (key !== adminKey) {
+    return res.status(403).json({ success: false, message: '无权操作' });
+  }
+  const data = loadData();
+  data.votes = [];
+  saveData(data);
+  res.json({ success: true, message: '投票数据已清空' });
+});
+
 // 获取投票结果排行
 app.get('/api/result', (req, res) => {
   const data = loadData();
